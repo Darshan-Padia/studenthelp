@@ -7,10 +7,12 @@ api = Linkedin("dpadia106@gmail.com", "Apdi*5678")
 class MyLinkedIn:
     def __init__(self, email, password):
         self.api = Linkedin(email, password)
-
+        self.contactInfo={}
     def get_profile_details(self, profile_id):
+        contact_info = self.api.get_profile_contact_info(profile_id)
+        self.contactInfo = contact_info
+        print(contact_info)
         return self.api.get_profile(profile_id)
-
     def profile_details(self, profile_details):
         first_name = profile_details.get('firstName', '')
         last_name = profile_details.get('lastName', '')
@@ -22,8 +24,14 @@ class MyLinkedIn:
         display_url+=profile_details.get('displayPictureUrl')
         display_url+=profile_details.get('img_200_200')
         profile_photo_url = display_url
+        print(self.contactInfo)
+        email = self.contactInfo.get('email_address', '')
+        '''
+        {'email_address': 'keertipurswani27@gmail.com', 'websites': [{'url': 'www.youtube.com/keertipurswani', 'label': 'PORTFOLIO'}, {'url': 'www.youtube.com/@codefromscratch-keertipurswani', 'label': 'COMPANY'}], 'twitter': [], 'birthdate': None, 'ims': None, 'phone_numbers': []}
+        '''
+        phone = self.contactInfo.get('phone_numbers', [])
 
-        # print(profile_details)
+        # print(contact_info)
         return {
             'first_name': first_name,
             'last_name': last_name,
@@ -31,7 +39,9 @@ class MyLinkedIn:
             'skills': skills,
             'headline': headline,
             'summary': summary,
-            'profile_photo_url' :profile_photo_url 
+            'profile_photo_url' :profile_photo_url ,
+            'email': email,
+            'phone': phone[0] if phone else '',
         }
 
 @app.route('/get_profile', methods=['POST'])

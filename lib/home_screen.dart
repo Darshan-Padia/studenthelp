@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:studenthelp/components/AluminiAddPage.dart';
+import 'package:studenthelp/components/SearchAlumini.dart';
 import 'package:studenthelp/components/login.dart';
 import 'package:studenthelp/components/profile.dart';
 import 'package:studenthelp/components/signup.dart';
@@ -103,6 +104,11 @@ class HomeScreen extends StatelessWidget {
                     ),
                   ),
                 ),
+                ElevatedButton(
+                    onPressed: () {
+                      Get.to(SearchAlumniPage());
+                    },
+                    child: Text('Search Alumni'))
               ],
             )
           ],

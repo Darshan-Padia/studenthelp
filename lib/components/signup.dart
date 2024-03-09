@@ -14,9 +14,7 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
-  final FirebaseHelper _firebaseHelper =
-      FirebaseHelper(); // Initialize FirebaseHelper
-
+  final FirebaseHelper _firebaseHelper = FirebaseHelper();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -27,10 +25,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _professionController = TextEditingController();
   final TextEditingController _skillsController = TextEditingController();
   final TextEditingController _cityController = TextEditingController();
-
-  CustomTextFieldBuilder textFieldBuilder = CustomTextFieldBuilder();
   bool _isLoading = false;
-  // override method to dispose
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -82,22 +78,40 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 20),
-
-                textFieldBuilder.buildTextField("name", _nameController),
-                textFieldBuilder.buildTextField("Email", _emailController),
-                textFieldBuilder.buildTextField("Password", _passwordController,
-                    isPassword: true),
-                textFieldBuilder.buildTextField("Phone", _phoneController,
-                    isPhone: true),
-                // Build the organization dropdown
-
-                textFieldBuilder.buildTextField(
-                    "Organization Name", _organizationNameController),
-                textFieldBuilder.buildTextField(
-                    "Profession", _professionController),
-                textFieldBuilder.buildTextField(
-                    "Skills (comma seperated)", _skillsController),
-                textFieldBuilder.buildTextField("City", _cityController),
+                CustomTextFieldBuilder(
+                  label: "name",
+                  controller: _nameController,
+                ),
+                CustomTextFieldBuilder(
+                  label: "Email",
+                  controller: _emailController,
+                ),
+                CustomTextFieldBuilder(
+                  label: "Password",
+                  controller: _passwordController,
+                  isPassword: true,
+                ),
+                CustomTextFieldBuilder(
+                  label: "Phone",
+                  controller: _phoneController,
+                  isPhone: true,
+                ),
+                CustomTextFieldBuilder(
+                  label: "Organization Name",
+                  controller: _organizationNameController,
+                ),
+                CustomTextFieldBuilder(
+                  label: "Profession",
+                  controller: _professionController,
+                ),
+                CustomTextFieldBuilder(
+                  label: "Skills (comma separated)",
+                  controller: _skillsController,
+                ),
+                CustomTextFieldBuilder(
+                  label: "City",
+                  controller: _cityController,
+                ),
                 SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: _isLoading ? null : _handleSignUp,
@@ -157,11 +171,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
     setState(() {
       _isLoading = true;
     });
-    // first check if all fields are filled and valid
+    // Check if all fields are filled and valid
     if (_nameController.text.trim().isEmpty ||
         _emailController.text.trim().isEmpty ||
         _passwordController.text.isEmpty ||
         _phoneController.text.trim().isEmpty) {
+      // Show error snackbar
       Get.snackbar(
         'Error',
         'Please fill all fields',
@@ -175,6 +190,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       return;
     }
     if (!_emailController.text.trim().contains('@')) {
+      // Show error snackbar
       Get.snackbar(
         'Error',
         'Please enter a valid email',
@@ -188,6 +204,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       return;
     }
     if (_passwordController.text.length < 6) {
+      // Show error snackbar
       Get.snackbar(
         'Error',
         'Password must be at least 6 characters',
@@ -200,8 +217,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
       });
       return;
     }
-    // checking 10 digit phone number
+    // Check if phone number is 10 digits
     if (_phoneController.text.trim().length != 10) {
+      // Show error snackbar
       Get.snackbar(
         'Error',
         'Please enter a valid phone number',
@@ -222,47 +240,29 @@ class _SignUpScreenState extends State<SignUpScreen> {
         password: _passwordController.text,
       );
 
-      // first adding the user organization to firestore
-      // add user to firestore
-
-      // Get the user ID
-      // final String userId = userCredential.user!.uid;
-
       // Add user data to Firestore using FirebaseHelper
       await _firebaseHelper.addUser(
         name: _nameController.text.trim(),
         email: _emailController.text.trim(),
         phoneNumber: _phoneController.text.trim(),
         organization: _organizationNameController.text.trim(),
-        profession: _professionController.text.trim(), // Add profession
-        skills:
-            _skillsController.text.split(','), // Convert skills string to list
-        city: _cityController.text.trim(), // Add city
+        profession: _professionController.text.trim(),
+        skills: _skillsController.text.split(','),
+        city: _cityController.text.trim(),
       );
 
+      // Navigate to HomeScreen
       Get.off(HomeScreen());
     } catch (e) {
       print("Error during sign up: $e");
-      if (e.toString() ==
-          '[firebase_auth/email-already-in-use] The email address is already in use by another account.') {
-        Get.snackbar(
-          'Error',
-          'User already registered',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
-        );
-      } else {
-        Get.snackbar(
-          'Error',
-          // showing actual error message from firebase,
-
-          e.toString(),
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
-        );
-      }
+      // Show error snackbar
+      Get.snackbar(
+        'Error',
+        e.toString(),
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     } finally {
       setState(() {
         _isLoading = false;
@@ -271,9 +271,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   void _showLoginScreen() {
-    Get.to(
-      () => LoginScreen(),
-      transition: Transition.rightToLeft,
-    );
+    Get.to(() => LoginScreen(), transition: Transition.rightToLeft);
   }
 }

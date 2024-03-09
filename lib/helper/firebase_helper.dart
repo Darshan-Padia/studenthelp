@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:studenthelp/Models/Alumini.dart';
@@ -12,14 +14,17 @@ class FirebaseHelper {
   final String commentCollection = 'comments';
   final String alumniCollection = 'alumni'; // New collection for alumni data
   // Add a new alumni to Firestore
-  Future<String> addAlumni(
-      {required String firstName,
-      required String lastName,
-      required String companyName,
-      required List<String> skills,
-      required String headline,
-      required String summary,
-      required String profile_photo_url}) async {
+  Future<String> addAlumni({
+    required String firstName,
+    required String lastName,
+    required String companyName,
+    required List<String> skills,
+    required String headline,
+    required String summary,
+    required String profilePhotoUrl,
+    required String email,
+    required String phone,
+  }) async {
     try {
       DocumentReference docRef =
           await _firestore.collection(alumniCollection).add({
@@ -29,13 +34,125 @@ class FirebaseHelper {
         'skills': skills,
         'headline': headline,
         'summary': summary,
-        'profile_photo_url': profile_photo_url
+        'profile_photo_url': profilePhotoUrl,
+        'email': email,
+        'phone': phone,
       });
 
       return docRef.id; // Return the auto-generated alumni ID
     } catch (e) {
       print('Error adding alumni: $e');
       return ''; // Return an empty string or handle the error accordingly
+    }
+  }
+
+  // Update alumni data in Firestore
+  Future<void> updateAlumni({
+    required String alumniId,
+    required String firstName,
+    required String lastName,
+    required String companyName,
+    required List<String> skills,
+    required String headline,
+    required String summary,
+    required String profilePhotoUrl,
+    required String email,
+    required String phone,
+  }) async {
+    try {
+      await _firestore.collection(alumniCollection).doc(alumniId).update({
+        'firstName': firstName,
+        'lastName': lastName,
+        'companyName': companyName,
+        'skills': skills,
+        'headline': headline,
+        'summary': summary,
+        'profile_photo_url': profilePhotoUrl,
+        'email': email,
+        'phone': phone,
+      });
+    } catch (e) {
+      print('Error updating alumni: $e');
+    }
+  }
+
+  // Search alumni by skills, name, or company name
+  Future<List<Alumni>> searchAlumni({
+    String? querySkills,
+    String? queryName,
+    String? queryCompanyName,
+  }) async {
+    try {
+      Query alumniQuery = _firestore.collection(alumniCollection);
+
+      if (querySkills != null && querySkills.isNotEmpty) {
+        alumniQuery = alumniQuery.where('skills', arrayContains: querySkills);
+      }
+
+      if (queryName != null && queryName.isNotEmpty) {
+        //  checking names after lowercasing both the names, database and query and spliting from space
+        var firstNameee = queryName.split(' ')[0];
+        late var lastNameee;
+        try {
+          lastNameee = queryName.toLowerCase().split(' ')[1];
+        } catch (e) {
+          lastNameee = "";
+        }
+
+        // check if any of the name is empty
+        if (firstNameee.isNotEmpty && lastNameee.isNotEmpty) {
+          alumniQuery = alumniQuery
+              .where('firstName', isEqualTo: firstNameee)
+              .where('lastName', isEqualTo: lastNameee);
+        } else if (firstNameee.isNotEmpty) {
+          alumniQuery = alumniQuery.where('firstName', isEqualTo: "Vraj ");
+          //print("any");
+          //getAllAlumniNames();
+        } else if (lastNameee.isNotEmpty) {
+          alumniQuery = alumniQuery.where('lastName', isEqualTo: lastNameee);
+        }
+        // .where('lastName', isEqualTo: queryName);
+        print(queryName);
+      }
+
+      if (queryCompanyName != null && queryCompanyName.isNotEmpty) {
+        alumniQuery =
+            alumniQuery.where('companyName', isEqualTo: queryCompanyName);
+      }
+
+      QuerySnapshot querySnapshot = await alumniQuery.get();
+      print(querySnapshot.docs.length);
+      var data = querySnapshot.docs
+          .where((doc) {
+            print(doc.data());
+            log('doc.data() ${doc.data()}', name: 'searchAlumni');
+            return doc.data() != null;
+          })
+          .map((doc) => Alumni.fromMap(doc.data()! as Map<String, dynamic>))
+          .toList();
+      print(data);
+      return data;
+    } catch (e) {
+      print('Error searching alumni: $e');
+      return [];
+    }
+  }
+
+// Get all names of alumni from Firestore
+  Future<List<String>> getAllAlumniNames() async {
+    try {
+      QuerySnapshot querySnapshot =
+          await _firestore.collection(alumniCollection).get();
+      var data = querySnapshot.docs
+          .where((doc) => doc.data() != null)
+          .map((doc) =>
+              '${(doc.data() as Map<String, dynamic>)['firstName']} ${(doc.data() as Map<String, dynamic>)['lastName']}')
+          .toList();
+      print(data);
+      return data;
+    } catch (e) {
+      print('Error getting all alumni names: $e');
+      return [];
     }
   }
 

@@ -7,6 +7,8 @@ class Alumni {
   final String headline;
   final String summary;
   final String profile_photo_url;
+  final String email;
+  final String phone;
 
   Alumni({
     required this.id,
@@ -17,6 +19,8 @@ class Alumni {
     required this.headline,
     required this.summary,
     required this.profile_photo_url,
+    required this.email,
+    required this.phone,
   });
 
   factory Alumni.fromMap(Map<String, dynamic> map) {
@@ -29,6 +33,8 @@ class Alumni {
       headline: map['headline'] ?? '',
       summary: map['summary'] ?? '',
       profile_photo_url: map['profile_photo_url'] ?? '',
+      email: map['email'] ?? '',
+      phone: map['phone'] ?? '',
     );
   }
 
@@ -42,6 +48,8 @@ class Alumni {
       'headline': headline,
       'summary': summary,
       'profile_photo_url': profile_photo_url,
+      'email': email,
+      'phone': phone,
     };
   }
 }
