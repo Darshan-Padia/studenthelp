@@ -1,5 +1,6 @@
 import 'dart:developer';
-
+import 'dart:math';
+import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:studenthelp/Models/Alumini.dart';
@@ -91,7 +92,7 @@ class FirebaseHelper {
 
       if (queryName != null && queryName.isNotEmpty) {
         //  checking names after lowercasing both the names, database and query and spliting from space
-        var firstNameee = queryName.split(' ')[0];
+        var firstNameee = queryName.toLowerCase().split(' ')[0];
         late var lastNameee;
         try {
           lastNameee = queryName.toLowerCase().split(' ')[1];
@@ -101,6 +102,8 @@ class FirebaseHelper {
 
         // check if any of the name is empty
         if (firstNameee.isNotEmpty && lastNameee.isNotEmpty) {
+          print(firstNameee);
+          print(lastNameee);
           alumniQuery = alumniQuery
               .where('firstName', isEqualTo: firstNameee)
               .where('lastName', isEqualTo: lastNameee);
@@ -125,7 +128,7 @@ class FirebaseHelper {
       var data = querySnapshot.docs
           .where((doc) {
             print(doc.data());
-            log('doc.data() ${doc.data()}', name: 'searchAlumni');
+            // log('doc.data() ${doc.data()}', name: 'searchAlumni');
             return doc.data() != null;
           })
           .map((doc) => Alumni.fromMap(doc.data()! as Map<String, dynamic>))
@@ -135,6 +138,20 @@ class FirebaseHelper {
     } catch (e) {
       print('Error searching alumni: $e');
       return [];
+    }
+  }
+
+  Future<List<Alumni>> getAllAlumni() async {
+    try {
+      QuerySnapshot querySnapshot =
+          await _firestore.collection(alumniCollection).get();
+      return querySnapshot.docs
+          .where((doc) => doc.data() != null) // Filter out null data
+          .map((doc) => Alumni.fromMap(doc.data()! as Map<String, dynamic>))
+          .toList();
+    } catch (e) {
+      print('Error getting alumni: $e');
+      return []; // Return an empty list or handle the error accordingly
     }
   }
 
@@ -313,20 +330,19 @@ class FirebaseHelper {
     }
   }
 
-// Generate a unique and meaningful pseudonym for a new user
   Future<String> generatePseudonym(String name) async {
-    // Extract initials from the user's name
-    List<String> nameParts = name.split(' ');
-    String initials = '';
-    nameParts.forEach((part) {
-      if (part.isNotEmpty) {
-        initials += part[0].toUpperCase();
-      }
-    });
+    // Define characters that can be used in pseudonym
+    const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
+
+    // Generate a random pseudonym
+    String pseudonym = '';
+    final random = Random.secure();
+    for (int i = 0; i < 8; i++) {
+      pseudonym += characters[random.nextInt(characters.length)];
+    }
 
     // Check if the pseudonym already exists
     bool isUnique = false;
-    String pseudonym = initials;
     int suffix = 1;
     while (!isUnique) {
       String checkPseudonym = pseudonym;
@@ -348,6 +364,42 @@ class FirebaseHelper {
 
     return pseudonym;
   }
+
+// Generate a unique and meaningful pseudonym for a new user
+  // Future<String> generatePseudonym(String name) async {
+  //   // Extract initials from the user's name
+  //   List<String> nameParts = name.split(' ');
+  //   String initials = '';
+  //   nameParts.forEach((part) {
+  //     if (part.isNotEmpty) {
+  //       initials += part[0].toUpperCase();
+  //     }
+  //   });
+
+  //   // Check if the pseudonym already exists
+  //   bool isUnique = false;
+  //   String pseudonym = initials;
+  //   int suffix = 1;
+  //   while (!isUnique) {
+  //     String checkPseudonym = pseudonym;
+  //     if (suffix > 1) {
+  //       checkPseudonym += suffix.toString();
+  //     }
+  //     QuerySnapshot querySnapshot = await _firestore
+  //         .collection(userCollection)
+  //         .where('pseudonym', isEqualTo: checkPseudonym)
+  //         .get();
+
+  //     if (querySnapshot.docs.isEmpty) {
+  //       isUnique = true;
+  //       pseudonym = checkPseudonym;
+  //     } else {
+  //       suffix++;
+  //     }
+  //   }
+
+  //   return pseudonym;
+  // }
 
   // Add a new user to Firestore
   Future<String> addUser({

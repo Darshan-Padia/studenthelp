@@ -66,18 +66,29 @@ class _AlumniAddPageState extends State<AlumniAddPage> {
       return;
     }
 
+    // Convert all text inputs to lowercase
+    final String firstName = firstNameController.text.toLowerCase();
+    final String lastName = lastNameController.text.toLowerCase();
+    final String companyName = companyNameController.text.toLowerCase();
+    final List<String> skills = skillsController.text
+        .toLowerCase()
+        .split(',')
+        .map((e) => e.trim())
+        .toList();
+    final String headline = headlineController.text.toLowerCase();
+    final String summary = summaryController.text.toLowerCase();
+
     // Check if all required fields are filled
     if (isEverythingFilled()) {
       try {
         // Call the FirebaseHelper method to add alumni
         final String alumniId = await FirebaseHelper().addAlumni(
-          firstName: firstNameController.text,
-          lastName: lastNameController.text,
-          companyName: companyNameController.text,
-          skills:
-              skillsController.text.split(',').map((e) => e.trim()).toList(),
-          headline: headlineController.text,
-          summary: summaryController.text,
+          firstName: firstName,
+          lastName: lastName,
+          companyName: companyName,
+          skills: skills,
+          headline: headline,
+          summary: summary,
           profilePhotoUrl: profileDetails!['profile_photo_url'] ?? '',
           email: email,
           phone: trimmedPhone,
@@ -126,7 +137,7 @@ class _AlumniAddPageState extends State<AlumniAddPage> {
     });
 
     final response = await http.post(
-      Uri.parse('http://192.168.170.35:5000/get_profile'),
+      Uri.parse('http://192.168.16.35:5000/get_profile'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({'linkedin_username': linkedinUsername}),
     );
