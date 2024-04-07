@@ -1,10 +1,12 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:studenthelp/Models/Alumini.dart';
 import 'package:studenthelp/helper/firebase_helper.dart'; // Import your FirebaseHelper
 
 class SearchAlumniPage extends StatefulWidget {
+  const SearchAlumniPage({super.key});
+
   @override
-  _SearchAlumniPageState createState() => _SearchAlumniPageState();
+  State<SearchAlumniPage> createState() => _SearchAlumniPageState();
 }
 
 class _SearchAlumniPageState extends State<SearchAlumniPage> {
@@ -13,7 +15,6 @@ class _SearchAlumniPageState extends State<SearchAlumniPage> {
   List<Alumni> _searchResults = [];
   String _searchType = 'Name'; // Default search type
   bool _isSearching = false;
-
   @override
   void initState() {
     super.initState();
@@ -66,100 +67,71 @@ class _SearchAlumniPageState extends State<SearchAlumniPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Search Alumni'),
-      ),
-      body: Column(
-        children: [
-          Padding(
-            padding: EdgeInsets.all(16.0),
-            child: Row(
-              children: [
-                Text('Search By: '),
-                Expanded(
-                  child: DropdownButtonFormField<String>(
-                    value: _searchType,
-                    onChanged: (newValue) {
+    return SafeArea(
+      child: SafeArea(
+        child: CupertinoPageScaffold(
+          navigationBar: CupertinoNavigationBar(
+            middle: Text('Search Alumni'),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: SafeArea(
+              child: Column(
+                children: [
+                  CupertinoSearchTextField(
+                    controller: _searchController,
+                    onSubmitted: (_) => _searchAlumni(),
+                  ),
+                  SizedBox(height: 20.0),
+                  CupertinoSegmentedControl(
+                    children: {
+                      'Name': Text('Name'),
+                      'Skills': Text('Skills'),
+                      'Company Name': Text('Company Name'),
+                    },
+                    groupValue: _searchType,
+                    onValueChanged: (value) {
                       setState(() {
-                        _searchType = newValue!;
+                        _searchType = value.toString();
                       });
                     },
-                    items: <String>['Name', 'Skills', 'Company Name']
-                        .map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Row(
-                          children: [
-                            if (value == 'Name') Icon(Icons.person),
-                            if (value == 'Skills') Icon(Icons.work),
-                            if (value == 'Company Name') Icon(Icons.business),
-                            SizedBox(width: 8),
-                            Text(value),
-                          ],
-                        ),
-                      );
-                    }).toList(),
                   ),
-                ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              children: [
-                Expanded(
-                  flex: 3,
-                  child: TextField(
-                    controller: _searchController,
-                    decoration: InputDecoration(
-                      hintText: 'Search',
-                      suffixIcon: IconButton(
-                        icon: Icon(Icons.clear),
-                        onPressed: () {
-                          _searchController.clear();
-                        },
-                      ),
+                  if (_isSearching)
+                    CupertinoActivityIndicator()
+                  else
+                    Expanded(
+                      child: _searchResults
+                              .isNotEmpty // Check if search results are not empty
+                          ? CupertinoListSection(
+                              children: _searchResults
+                                  .map((alumni) => CupertinoListTile(
+                                        title: Text(
+                                            '${alumni.firstName} ${alumni.lastName}'),
+                                        subtitle: Text(alumni.companyName),
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            CupertinoPageRoute(
+                                              builder: (context) =>
+                                                  AlumniProfilePage(
+                                                alumni: alumni,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      ))
+                                  .toList(),
+                            )
+                          : Center(
+                              child: Text(
+                                  'No results found'), // Display a message when there are no search results
+                            ),
                     ),
-                  ),
-                ),
-                IconButton(
-                  icon: Icon(Icons.search),
-                  onPressed: _searchAlumni,
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-          _isSearching
-              ? CircularProgressIndicator() // Show loading indicator while searching
-              : Expanded(
-                  child: ListView.builder(
-                    itemCount: _searchResults.length,
-                    itemBuilder: (context, index) {
-                      Alumni alumni = _searchResults[index];
-                      return Card(
-                        margin:
-                            EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                        child: ListTile(
-                          title: Text('${alumni.firstName} ${alumni.lastName}'),
-                          subtitle: Text(alumni.companyName),
-                          onTap: () {
-                            // Navigate to alumni profile screen
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    AlumniProfilePage(alumni: alumni),
-                              ),
-                            );
-                          },
-                        ),
-                      );
-                    },
-                  ),
-                ),
-        ],
+        ),
       ),
     );
   }
@@ -172,11 +144,11 @@ class AlumniProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Alumni Profile'),
+    return CupertinoPageScaffold(
+      navigationBar: CupertinoNavigationBar(
+        middle: Text('Alumni Profile'),
       ),
-      body: Center(
+      child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [

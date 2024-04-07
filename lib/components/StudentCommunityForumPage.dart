@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
@@ -7,67 +8,86 @@ import 'package:studenthelp/helper/firebase_helper.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:studenthelp/settings/theme_provider.dart';
 
-class StudentCommunityForumPage extends StatelessWidget {
+class StudentCommunityForumPage extends StatefulWidget {
+  const StudentCommunityForumPage({Key? key}) : super(key: key);
+
+  @override
+  State<StudentCommunityForumPage> createState() =>
+      _StudentCommunityForumPageState();
+}
+
+class _StudentCommunityForumPageState extends State<StudentCommunityForumPage> {
   final FirebaseHelper _firebaseHelper = FirebaseHelper();
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Student Community Forum'),
-      ),
-      body: StreamBuilder<List<Question>>(
-        stream: _firebaseHelper.getQuestionStream(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else {
-            List<Question> questions = snapshot.data ?? [];
-            return QuestionList(questions: questions);
-          }
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          _showAddQuestionDialog(context);
-        },
-        child: Icon(Icons.add),
-      ),
-    );
+    return Consumer<ThemeStateProvider>(builder: (context, theme, child) {
+      return SafeArea(
+        child: CupertinoPageScaffold(
+          navigationBar: CupertinoNavigationBar(
+            middle: Text('Student Community Forum'),
+          ),
+          child: Column(
+            children: [
+              Expanded(
+                child: StreamBuilder<List<Question>>(
+                  stream: _firebaseHelper.getQuestionStream(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CupertinoActivityIndicator());
+                    } else if (snapshot.hasError) {
+                      return Center(
+                          child: Text('Error: ${snapshot.error.toString()}'));
+                    } else {
+                      List<Question> questions = snapshot.data ?? [];
+                      return QuestionList(questions: questions);
+                    }
+                  },
+                ),
+              ),
+              CupertinoButton(
+                onPressed: () {
+                  _showAddQuestionDialog(context);
+                },
+                child: Icon(CupertinoIcons.add),
+              ),
+            ],
+          ),
+        ),
+      );
+    });
   }
 
   void _showAddQuestionDialog(BuildContext context) {
     TextEditingController titleController = TextEditingController();
     TextEditingController bodyController = TextEditingController();
 
-    showDialog(
+    showCupertinoDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (context) => CupertinoAlertDialog(
         title: Text('Add Question'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            TextField(
+            CupertinoTextField(
               controller: titleController,
-              decoration: InputDecoration(labelText: 'Title'),
+              placeholder: 'Title',
             ),
             SizedBox(height: 8),
-            TextField(
+            CupertinoTextField(
               controller: bodyController,
-              decoration: InputDecoration(labelText: 'Body'),
+              placeholder: 'Body',
             ),
           ],
         ),
         actions: [
-          TextButton(
+          CupertinoDialogAction(
             onPressed: () {
               Navigator.of(context).pop();
             },
             child: Text('Cancel'),
           ),
-          TextButton(
+          CupertinoDialogAction(
             onPressed: () async {
               String userId = FirebaseAuth.instance.currentUser!.uid;
               String title = titleController.text;
@@ -82,14 +102,10 @@ class StudentCommunityForumPage extends StatelessWidget {
                 );
 
                 // Close dialog and show success message
-                Navigator.of(context).pop();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Question added successfully')),
-                );
+                Get.back();
+                Get.snackbar('Success', 'Question added successfully');
               } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Please fill all fields')),
-                );
+                Get.snackbar('Error', 'Please fill all fields');
               }
             },
             child: Text('Add'),
@@ -100,10 +116,39 @@ class StudentCommunityForumPage extends StatelessWidget {
   }
 }
 
-class QuestionList extends StatelessWidget {
+class QuestionList extends StatefulWidget {
   final List<Question> questions;
 
   QuestionList({required this.questions});
+
+  @override
+  _QuestionListState createState() => _QuestionListState();
+}
+
+class _QuestionListState extends State<QuestionList> {
+  late List<Question> filteredQuestions;
+
+  @override
+  void initState() {
+    filteredQuestions = widget.questions;
+    super.initState();
+  }
+
+  void filterQuestions(String query) {
+    if (query.isEmpty) {
+      setState(() {
+        filteredQuestions = widget.questions;
+      });
+    } else {
+      setState(() {
+        filteredQuestions = widget.questions
+            .where((question) =>
+                question.title.toLowerCase().contains(query.toLowerCase()) ||
+                question.body.toLowerCase().contains(query.toLowerCase()))
+            .toList();
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -112,25 +157,49 @@ class QuestionList extends StatelessWidget {
           ? Colors.white.withOpacity(0.4)
           : Colors.black.withOpacity(0.4);
 
-      return ListView.builder(
-        itemCount: questions.length,
-        itemBuilder: (context, index) {
-          return Column(
+      return Flexible(
+        child: SafeArea(
+          child: Column(
             children: [
-              ListTile(
-                title: Text(questions[index].title),
-                subtitle: Text(questions[index].body),
-                onTap: () {
-                  Get.to(() => QuestionDetailPage(question: questions[index]));
-                },
+              Padding(
+                padding: EdgeInsets.all(8.0),
+                child: CupertinoSearchTextField(
+                  onChanged: filterQuestions,
+                  placeholder: 'Search',
+                ),
               ),
-              Divider(
-                color: dividerColor,
-                thickness: 1.0,
+              Expanded(
+                child: filteredQuestions.isEmpty
+                    ? Center(
+                        child: Text('No questions found.'),
+                      )
+                    : SingleChildScrollView(
+                        child: CupertinoListSection(
+                          topMargin: 0,
+                          children: filteredQuestions
+                              .map((question) => CupertinoListTile(
+                                    leadingSize: 60, // I
+                                    title: Text(question.title),
+                                    subtitle: Text(question.body),
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        CupertinoPageRoute(
+                                          builder: (context) =>
+                                              QuestionDetailPage(
+                                            question: question,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ))
+                              .toList(),
+                        ),
+                      ),
               ),
             ],
-          );
-        },
+          ),
+        ),
       );
     });
   }

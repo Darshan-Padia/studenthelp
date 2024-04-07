@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -42,14 +43,17 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return Consumer<ThemeStateProvider>(builder: (context, theme, child) {
-      return GetMaterialApp(
+      return GetCupertinoApp(
         debugShowCheckedModeBanner: false,
-        theme: ThemeConfig.lightTheme,
-        darkTheme: ThemeConfig.darkTheme,
-        themeMode: theme.isDarkTheme ? ThemeMode.dark : ThemeMode.light,
-        initialRoute: '/',
+        theme: CupertinoThemeData(
+          primaryColor: Colors.blue,
+          brightness: theme.isDarkTheme ? Brightness.dark : Brightness.light,
+        ),
+        // theme: ThemeConfig.lightTheme,
+        // darkTheme: ThemeConfig.darkTheme,
+        // themeMode: theme.isDarkTheme ? ThemeMode.dark : ThemeMode.light,
+        home: HomeScreen(),
         routes: {
-          '/': (context) => HomeScreen(),
           '/signup': (context) => SignUpScreen(),
           '/login': (context) => LoginScreen(),
         },

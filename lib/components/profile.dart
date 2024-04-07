@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+// import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -36,7 +37,6 @@ class ProfileScreen extends StatefulWidget {
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
-// name,email,phone
 class _ProfileScreenState extends State<ProfileScreen> {
   User? user = FirebaseAuth.instance.currentUser;
   bool isLoading = true;
@@ -84,57 +84,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // DarkColors
-
-    return Consumer<ThemeStateProvider>(builder: (context, theme, child) {
-      return Scaffold(
-        backgroundColor: theme.isDarkTheme
-            ? DarkColors.scaffoldBgColor
-            : LightColors.scaffoldBgColor,
-        appBar: AppBar(
-          title: Text(
-            'Profile',
-            style: GoogleFonts.poppins(
-              color: theme.isDarkTheme
-                  ? DarkColors.textColor
-                  : LightColors.textColor,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          centerTitle: true,
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          leading: IconButton(
-            onPressed: () {
-              Get.back();
-            },
-            icon: Icon(
-              Icons.arrow_back_ios_new,
-              color: theme.isDarkTheme
-                  ? DarkColors.textColor
-                  : LightColors.textColor,
-            ),
+    return CupertinoPageScaffold(
+      navigationBar: CupertinoNavigationBar(
+        middle: Text(
+          'Profile',
+          style: GoogleFonts.poppins(
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
           ),
         ),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              Stack(
-                children: [
-                  _buildCoverImage(context),
-                  _buildProfilePicture(context),
-                ],
-              ),
-              _buildProfileContent(context),
-              const SizedBox(height: 20),
-              // Add a theme switcher
-
-              const SizedBox(height: 20),
-            ],
-          ),
+      ),
+      child: SafeArea(
+        child: Stack(
+          children: [
+            _buildCoverImage(context),
+            _buildProfilePicture(context),
+            _buildProfileContent(context),
+          ],
         ),
-      );
-    });
+      ),
+    );
   }
 
   Widget _buildCoverImage(BuildContext context) {
@@ -196,7 +165,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: Container(
           child: isLoading
               ? const Center(
-                  child: CircularProgressIndicator(),
+                  child: CupertinoActivityIndicator(),
                 )
               : Column(
                   crossAxisAlignment:
@@ -269,41 +238,50 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     const SizedBox(height: 20),
                     widget.name == 'Default'
                         ? Center(
-                            child: ElevatedButton(
+                            child:
+                                // ElevatedButton(
+                                //   onPressed: () async {
+                                //     await FirebaseAuth.instance.signOut();
+                                //     Get.offAll(() => LoginScreen());
+                                //   },
+                                //   style: ElevatedButton.styleFrom(
+                                //     primary: //transparent, // Background color
+                                //         Colors.blue[400],
+                                //     shape: RoundedRectangleBorder(
+                                //       borderRadius: BorderRadius.circular(20.0),
+                                //     ),
+                                //     padding:
+                                //         const EdgeInsets.symmetric(vertical: 12),
+                                //   ),
+                                //   child: const Stack(
+                                //     alignment: Alignment.center,
+                                //     children: [
+                                //       Icon(
+                                //         Icons.logout,
+                                //         size: 20,
+                                //         color: Colors.white,
+                                //       ),
+                                //       Positioned(
+                                //         left: 40,
+                                //         child: Text(
+                                //           "Logout",
+                                //           style: TextStyle(
+                                //             fontSize: 18,
+                                //             fontWeight: FontWeight.bold,
+                                //             color: Colors.white,
+                                //           ),
+                                //         ),
+                                //       ),
+                                //     ],
+                                //   ),
+                                // ),
+                                CupertinoButton(
                               onPressed: () async {
                                 await FirebaseAuth.instance.signOut();
                                 Get.offAll(() => LoginScreen());
                               },
-                              style: ElevatedButton.styleFrom(
-                                primary: //transparent, // Background color
-                                    Colors.blue[400],
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20.0),
-                                ),
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 12),
-                              ),
-                              child: const Stack(
-                                alignment: Alignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.logout,
-                                    size: 20,
-                                    color: Colors.white,
-                                  ),
-                                  Positioned(
-                                    left: 40,
-                                    child: Text(
-                                      "Logout",
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
+                              child: const Text('Logout'),
+                              color: Colors.red,
                             ),
                           )
                         : const SizedBox.shrink(),

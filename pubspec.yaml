@@ -42,6 +42,10 @@ dependencies:
   cloud_firestore: ^4.15.5
   firebase_storage: ^11.6.6
   google_fonts: ^6.1.0
+  dropdown_search: ^4.0.0
+  cupertino_listview: ^2.0.0
+  scroll_to_index: ^3.0.1
+
 
 dev_dependencies:
   flutter_test:

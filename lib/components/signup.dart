@@ -1,5 +1,8 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
+// import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+// import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:studenthelp/components/login.dart';
@@ -9,8 +12,10 @@ import 'package:studenthelp/settings/theme_provider.dart';
 import 'package:studenthelp/widgets/text_field.dart';
 
 class SignUpScreen extends StatefulWidget {
+  const SignUpScreen({super.key});
+
   @override
-  _SignUpScreenState createState() => _SignUpScreenState();
+  State<SignUpScreen> createState() => _SignUpScreenState();
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
@@ -29,141 +34,181 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
     return Consumer<ThemeStateProvider>(builder: (context, theme, child) {
-      return Scaffold(
-        body: SingleChildScrollView(
-          child: Form(
-            child: Column(
-              children: [
-                Container(
-                  height: size.height * 0.24,
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        Theme.of(context).primaryColor,
-                        Theme.of(context).primaryColorDark,
-                        Theme.of(context).primaryColorLight,
+      final size = MediaQuery.of(context).size;
+
+      return CupertinoPageScaffold(
+          navigationBar: CupertinoNavigationBar(
+            middle: Text('Sign Up'),
+          ),
+          child: SingleChildScrollView(
+            child: Form(
+              child: Column(
+                children: [
+                  Container(
+                    height: size.height * 0.24,
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          CupertinoTheme.of(context).primaryColor,
+                          CupertinoTheme.of(context).primaryColor,
+                          CupertinoTheme.of(context).barBackgroundColor,
+                        ],
+                      ),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'StudentHelp',
+                          style:
+                              Theme.of(context).textTheme.headline2?.copyWith(
+                                    color: Theme.of(context).hintColor,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                        ),
+                        const SizedBox(
+                          height: 6,
+                        ),
+                        Text(
+                          'Signup',
+                          style:
+                              Theme.of(context).textTheme.headline3?.copyWith(
+                                    color: Colors.white,
+                                  ),
+                        ),
                       ],
                     ),
                   ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'StudentHelp',
-                        style: Theme.of(context).textTheme.headline2?.copyWith(
-                              color: Theme.of(context).hintColor,
-                              fontWeight: FontWeight.bold,
-                            ),
-                      ),
-                      const SizedBox(
-                        height: 6,
-                      ),
-                      Text(
-                        'Signup',
-                        style: Theme.of(context).textTheme.headline3?.copyWith(
-                              color: Colors.white,
-                            ),
-                      ),
-                    ],
+                  SizedBox(height: 20),
+                  Text(
+                    'Welcome to Student Help',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
-                ),
-                SizedBox(height: 20),
-                Text(
-                  'Welcome to Student Help',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 20),
-                CustomTextFieldBuilder(
-                  label: "name",
-                  controller: _nameController,
-                ),
-                CustomTextFieldBuilder(
-                  label: "Email",
-                  controller: _emailController,
-                ),
-                CustomTextFieldBuilder(
-                  label: "Password",
-                  controller: _passwordController,
-                  isPassword: true,
-                ),
-                CustomTextFieldBuilder(
-                  label: "Phone",
-                  controller: _phoneController,
-                  isPhone: true,
-                ),
-                CustomTextFieldBuilder(
-                  label: "Organization Name",
-                  controller: _organizationNameController,
-                ),
-                CustomTextFieldBuilder(
-                  label: "Profession",
-                  controller: _professionController,
-                ),
-                CustomTextFieldBuilder(
-                  label: "Skills (comma separated)",
-                  controller: _skillsController,
-                ),
-                CustomTextFieldBuilder(
-                  label: "City",
-                  controller: _cityController,
-                ),
-                SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: _isLoading ? null : _handleSignUp,
-                  style: ElevatedButton.styleFrom(
-                    primary: Theme.of(context).primaryColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                    padding: EdgeInsets.symmetric(vertical: 15),
+                  SizedBox(height: 20),
+                  CustomTextFieldBuilder(
+                    label: "name",
+                    controller: _nameController,
                   ),
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      if (!_isLoading)
-                        Icon(
-                          Icons.person_add,
-                          size: 30,
-                          color: Colors.white,
-                        ),
-                      if (_isLoading)
-                        CircularProgressIndicator(
-                          valueColor:
-                              AlwaysStoppedAnimation<Color>(Colors.white),
-                        ),
-                      if (!_isLoading)
-                        Positioned(
-                          left: 40,
-                          child: Text(
-                            "Sign Up",
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
+                  CustomTextFieldBuilder(
+                    label: "Email",
+                    controller: _emailController,
+                  ),
+                  CustomTextFieldBuilder(
+                    label: "Password",
+                    controller: _passwordController,
+                    isPassword: true,
+                  ),
+                  CustomTextFieldBuilder(
+                    label: "Phone",
+                    controller: _phoneController,
+                    isPhone: true,
+                  ),
+                  CustomTextFieldBuilder(
+                    label: "Organization Name",
+                    controller: _organizationNameController,
+                  ),
+                  CustomTextFieldBuilder(
+                    label: "Profession",
+                    controller: _professionController,
+                  ),
+                  CustomTextFieldBuilder(
+                    label: "Skills (comma separated)",
+                    controller: _skillsController,
+                  ),
+                  CustomTextFieldBuilder(
+                    label: "City",
+                    controller: _cityController,
+                  ),
+                  SizedBox(height: 20),
+                  // ElevatedButton(
+                  //   onPressed: _isLoading ? null : _handleSignUp,
+                  //   style: ElevatedButton.styleFrom(
+                  //     primary: Theme.of(context).primaryColor,
+                  //     shape: RoundedRectangleBorder(
+                  //       borderRadius: BorderRadius.circular(10.0),
+                  //     ),
+                  //     padding: EdgeInsets.symmetric(vertical: 15),
+                  //   ),
+                  //   child: Stack(
+                  //     alignment: Alignment.center,
+                  //     children: [
+                  //       if (!_isLoading)
+                  //         Icon(
+                  //           Icons.person_add,
+                  //           size: 30,
+                  //           color: Colors.white,
+                  //         ),
+                  //       if (_isLoading)
+                  //         CircularProgressIndicator(
+                  //           valueColor:
+                  //               AlwaysStoppedAnimation<Color>(Colors.white),
+                  //         ),
+                  //       if (!_isLoading)
+                  //         Positioned(
+                  //           left: 40,
+                  //           child: Text(
+                  //             "Sign Up",
+                  //             style: TextStyle(
+                  //               fontSize: 18,
+                  //               fontWeight: FontWeight.bold,
+                  //               color: Colors.white,
+                  //             ),
+                  //           ),
+                  //         ),
+                  //     ],
+                  //   ),
+                  // ),
+
+                  CupertinoButton(
+                    onPressed: _isLoading ? null : _handleSignUp,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        if (!_isLoading)
+                          Icon(
+                            CupertinoIcons.person_add,
+                            size: 30,
+                            color: Colors.white,
+                          ),
+                        if (_isLoading)
+                          CupertinoActivityIndicator(
+                            radius: 15,
+                          ),
+                        if (!_isLoading)
+                          Positioned(
+                            left: 40,
+                            child: Text(
+                              "Sign Up",
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
                             ),
                           ),
-                        ),
-                    ],
+                      ],
+                    ),
+                    // color: Theme.of(context).primaryColor,
+                    padding: EdgeInsets.symmetric(vertical: 15),
+                    borderRadius: BorderRadius.circular(10.0),
                   ),
-                ),
-                SizedBox(height: 10),
-                GestureDetector(
-                  onTap: _isLoading ? null : _showLoginScreen,
-                  child: Text(
-                    "Already registered? Login here",
-                    style: TextStyle(color: Colors.blue),
+
+                  SizedBox(height: 10),
+                  GestureDetector(
+                    onTap: _isLoading ? null : _showLoginScreen,
+                    child: Text(
+                      "Already registered? Login here",
+                      style: TextStyle(color: Colors.blue),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ),
-      );
+          ));
     });
   }
 
@@ -239,6 +284,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
         email: _emailController.text.trim(),
         password: _passwordController.text,
       );
+
+      // check if profession is teacher then add to mentor collection
+      if (_professionController.text.trim().toLowerCase() == 'teacher') {
+        await _firebaseHelper.addMentor(
+          userId: FirebaseAuth.instance.currentUser!.uid,
+          name: _nameController.text.trim(),
+        );
+      }
 
       // Add user data to Firestore using FirebaseHelper
       await _firebaseHelper.addUser(

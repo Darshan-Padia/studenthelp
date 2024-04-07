@@ -8,6 +8,8 @@ class Userr {
   final List<String> skills;
   final String city;
   final String pseudonym;
+  final String? mentorId;
+  final String? approved;
 
   Userr({
     required this.id,
@@ -19,6 +21,8 @@ class Userr {
     required this.skills,
     required this.city,
     required this.pseudonym,
+    this.mentorId,
+    this.approved,
   });
 
   factory Userr.fromJson(Map<String, dynamic> json) {
@@ -32,6 +36,8 @@ class Userr {
       skills: List<String>.from(json['skills'] ?? []),
       city: json['city'] ?? '',
       pseudonym: json['pseudonym'] ?? '',
+      mentorId: json['mentorId'],
+      approved: json['approved'],
     );
   }
 
@@ -46,6 +52,8 @@ class Userr {
       'skills': skills,
       'city': city,
       'pseudonym': pseudonym,
+      'mentorId': mentorId,
+      'approved': approved,
     };
   }
 }
