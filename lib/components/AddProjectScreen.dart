@@ -1,9 +1,11 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:studenthelp/widgets/text_field.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:studenthelp/Models/ProjectModel.dart';
 import 'package:studenthelp/helper/firebase_helper.dart';
-
+import 'package:get/get.dart';
 class AddProjectScreen extends StatefulWidget {
   final Function(Project) onProjectAdded;
   final Project? project; // Nullable Project to edit if not null
@@ -50,141 +52,114 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.project != null ? 'Edit Project' : 'Add Project'),
+    return 
+    CupertinoPageScaffold(
+      navigationBar: CupertinoNavigationBar(
+        middle: Text('Add Project'),
       ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: 16.0),
-            _buildTextField(titleController, 'Title', TextInputType.text),
-            SizedBox(height: 16.0),
-            _buildTextField(
-                descriptionController, 'Description', TextInputType.multiline),
-            SizedBox(height: 16.0),
-            _buildTextField(
-                techStackController, 'Tech Stack', TextInputType.text),
-            SizedBox(height: 16.0),
-            _buildTextField(
-                teamMembersController, 'Team Members', TextInputType.text),
-            SizedBox(height: 16.0),
-            _buildTextField(
-                facultyGuideController, 'Faculty Guide', TextInputType.text),
-            SizedBox(height: 16.0),
-            _buildTextField(
-                driveLinkController, 'Drive Link', TextInputType.url),
-            SizedBox(height: 16.0),
-            _buildTextField(
-                gitRepoLinkController, 'GitHub Repo Link', TextInputType.url),
-            SizedBox(height: 16.0),
-            _buildTextField(semesterController, 'Semester', TextInputType.text),
-            SizedBox(height: 16.0),
-            Center(
-                child:
-                    //  ElevatedButton(
-                    //   onPressed: () async {
-                    //     if (_validateInputs()) {
-                    //       Project updatedProject = _createProject();
-                    //       if (widget.project != null) {
-                    //         // If it's an edit operation, update project
-                    //         await FirebaseHelper().updateProject(
-                    //           projectId: updatedProject.projectId,
-                    //           title: updatedProject.title,
-                    //           description: updatedProject.description,
-                    //           techStack: updatedProject.techStack,
-                    //           teamMembers: updatedProject.teamMembers,
-                    //           facultyGuide: updatedProject.facultyGuide,
-                    //           driveLink: updatedProject.driveLink,
-                    //           gitRepoLink: updatedProject.gitRepoLink,
-                    //           semester: updatedProject.semester,
-                    //         );
-                    //       } else {
-                    //         // If it's an add operation, add project
-                    //         await FirebaseHelper().addProject(
-                    //           projectId: updatedProject.projectId,
-                    //           userId: updatedProject.userId,
-                    //           title: updatedProject.title,
-                    //           description: updatedProject.description,
-                    //           techStack: updatedProject.techStack,
-                    //           teamMembers: updatedProject.teamMembers,
-                    //           facultyGuide: updatedProject.facultyGuide,
-                    //           driveLink: updatedProject.driveLink,
-                    //           gitRepoLink: updatedProject.gitRepoLink,
-                    //           semester: updatedProject.semester,
-                    //         );
-                    //       }
-                    //       widget.onProjectAdded(updatedProject);
-                    //       Navigator.pop(context);
-                    //     }
-                    //   },
-                    //   style: ElevatedButton.styleFrom(
-                    //     padding: EdgeInsets.symmetric(horizontal: 40, vertical: 16),
-                    //     shape: RoundedRectangleBorder(
-                    //       borderRadius: BorderRadius.circular(8.0),
-                    //     ),
-                    //   ),
-                    //   child:
-                    //       Text(widget.project != null ? 'Edit Done' : 'Add Project'),
-                    // ),
-                    CupertinoButton.filled(
-              onPressed: () async {
-                if (_validateInputs()) {
-                  Project updatedProject = _createProject();
-                  if (widget.project != null) {
-                    // If it's an edit operation, update project
-                    await FirebaseHelper().updateProject(
-                      projectId: updatedProject.projectId,
-                      title: updatedProject.title,
-                      description: updatedProject.description,
-                      techStack: updatedProject.techStack,
-                      teamMembers: updatedProject.teamMembers,
-                      facultyGuide: updatedProject.facultyGuide,
-                      driveLink: updatedProject.driveLink,
-                      gitRepoLink: updatedProject.gitRepoLink,
-                      semester: updatedProject.semester,
-                    );
-                  } else {
-                    // If it's an add operation, add project
-                    await FirebaseHelper().addProject(
-                      projectId: updatedProject.projectId,
-                      userId: updatedProject.userId,
-                      title: updatedProject.title,
-                      description: updatedProject.description,
-                      techStack: updatedProject.techStack,
-                      teamMembers: updatedProject.teamMembers,
-                      facultyGuide: updatedProject.facultyGuide,
-                      driveLink: updatedProject.driveLink,
-                      gitRepoLink: updatedProject.gitRepoLink,
-                      semester: updatedProject.semester,
-                    );
-                  }
-                  widget.onProjectAdded(updatedProject);
-                  Navigator.pop(context);
-                }
-              },
-              child: Text(widget.project != null ? 'Edit Done' : 'Add Project'),
-            )),
-          ],
+      child: SafeArea(
+
+        child: 
+        SingleChildScrollView(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CustomTextFieldBuilder(
+                      label: 'Title',
+                      controller: titleController,
+                    ),
+                    
+                    const SizedBox(height: 20.0),
+                    CustomTextFieldBuilder(
+                      label: 'Description',
+                      controller: descriptionController,
+                    ),
+                    const SizedBox(height: 10.0),
+                    CustomTextFieldBuilder(
+                      label: 'Tech Stack',
+                      controller: techStackController,
+                    ),
+                    const SizedBox(height: 10.0),
+                    CustomTextFieldBuilder(
+                      label: 'Team Members',
+                      controller: teamMembersController,
+                    ),
+                    const SizedBox(height: 10.0),
+                    CustomTextFieldBuilder(
+                      label: 'Faculty Guide',
+                      controller: facultyGuideController,
+                    ),
+                    const SizedBox(height: 10.0),
+                    CustomTextFieldBuilder(
+                      label: 'Drive Link',
+                      controller: driveLinkController,
+                    ),
+                    const SizedBox(height: 10.0),
+                    CustomTextFieldBuilder(
+                      label: 'Git Repo Link',
+                      controller: gitRepoLinkController,
+                    ),
+                    const SizedBox(height: 10.0),
+                    CustomTextFieldBuilder(
+                      label: 'Semester',
+                      controller: semesterController,
+                    ),
+                    const SizedBox(height: 10.0),
+          
+                    Center(
+                      child: CupertinoButton.filled(
+                        onPressed: () async {
+                          if (_validateInputs()) {
+                            Project updatedProject = _createProject();
+                            if (widget.project != null) {
+                              // If it's an edit operation, update project
+                              await FirebaseHelper().updateProject(
+                                projectId: updatedProject.projectId,
+                                title: updatedProject.title,
+                                description: updatedProject.description,
+                                techStack: updatedProject.techStack,
+                                teamMembers: updatedProject.teamMembers,
+                                facultyGuide: updatedProject.facultyGuide,
+                                driveLink: updatedProject.driveLink,
+                                gitRepoLink: updatedProject.gitRepoLink,
+                                semester: updatedProject.semester,
+                              );
+                            } else {
+                              // If it's an add operation, add project
+                              await FirebaseHelper().addProject(
+                                projectId: updatedProject.projectId,
+                                userId: updatedProject.userId,
+                                title: updatedProject.title,
+                                description: updatedProject.description,
+                                techStack: updatedProject.techStack,
+                                teamMembers: updatedProject.teamMembers,
+                                facultyGuide: updatedProject.facultyGuide,
+                                driveLink: updatedProject.driveLink,
+                                gitRepoLink: updatedProject.gitRepoLink,
+                                semester: updatedProject.semester,
+                              );
+                            }
+                            widget.onProjectAdded(updatedProject);
+                            Navigator.pop(context);
+                          }
+                        },
+                        child: Text(
+                            widget.project != null ? 'Edit Done' : 'Add Project'),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
-
-  Widget _buildTextField(TextEditingController controller, String labelText,
-      TextInputType inputType) {
-    return TextField(
-      controller: controller,
-      decoration: InputDecoration(
-        labelText: labelText,
-        border: OutlineInputBorder(),
-      ),
-      keyboardType: inputType,
-    );
-  }
-
   Project _createProject() {
     return Project(
       projectId: widget.project?.projectId ??
@@ -212,9 +187,9 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
         teamMembersController.text.trim().isEmpty ||
         facultyGuideController.text.trim().isEmpty ||
         semesterController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Please fill in all required fields'),
-      ));
+      // show get snackbar
+      Get.snackbar('Error', 'Please fill all the fields',
+          backgroundColor: Colors.red);
       return false;
     }
     return true;
@@ -222,6 +197,7 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
 
   @override
   void dispose() {
+    
     titleController.dispose();
     descriptionController.dispose();
     techStackController.dispose();

@@ -1,6 +1,7 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
+import 'package:studenthelp/Models/Mentor.dart';
 import 'package:studenthelp/Models/UserModel.dart';
 import 'package:studenthelp/components/Mentee.dart';
 import 'package:studenthelp/components/Mentor.dart';
@@ -10,6 +11,7 @@ class MentorMentee extends StatefulWidget {
   @override
   _MentorMenteeState createState() => _MentorMenteeState();
 }
+
 
 class _MentorMenteeState extends State<MentorMentee> {
   Userr? _user; // Declare a variable to hold user data
@@ -33,12 +35,12 @@ class _MentorMenteeState extends State<MentorMentee> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Your Screen'),
+    return CupertinoPageScaffold(
+      navigationBar: CupertinoNavigationBar(
+        middle: Text('Your Screen'),
       ),
-      body: _isLoading
-          ? Center(child: CircularProgressIndicator())
+      child: _isLoading
+          ? Center(child: CupertinoActivityIndicator() )
           : _buildBody(),
     );
   }
@@ -53,12 +55,12 @@ class _MentorMenteeState extends State<MentorMentee> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ElevatedButton(
+            CupertinoButton(
               onPressed: isTeacher ? null : _navigateToMenteeScreen,
               child: Text(isTeacher ? 'Mentee (Disabled)' : 'Mentee'),
             ),
-            SizedBox(height: 20),
-            ElevatedButton(
+            const SizedBox(height: 20),
+            CupertinoButton(
               onPressed: isTeacher ? _navigateToMentorScreen : null,
               child: Text(isTeacher ? 'Mentor' : 'Mentor (Disabled)'),
             ),
@@ -66,7 +68,9 @@ class _MentorMenteeState extends State<MentorMentee> {
         ),
       );
     } else {
-      return Center(child: Text('User data not found'));
+      return Center(
+        child: Text('User data not found'),
+      );
     }
   }
 
@@ -79,6 +83,5 @@ class _MentorMenteeState extends State<MentorMentee> {
   // Function to navigate to the mentor screen
   void _navigateToMentorScreen() {
     Get.to(MentorScreen());
-    // Implement navigation logic to the mentor screen
   }
 }

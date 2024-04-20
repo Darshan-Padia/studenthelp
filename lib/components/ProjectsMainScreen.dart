@@ -1,3 +1,4 @@
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -49,35 +50,22 @@ class _ProjectMainScreenState extends State<ProjectMainScreen> {
   ];
   // Function to filter projects based on search criteria
   List<Project> filterProjects(String query) {
-    switch (searchValue) {
-      case 'Title':
-        return projects
-            .where((project) =>
-                project.title.toLowerCase().contains(query.toLowerCase()))
-            .toList();
-      case 'Tech Stack':
-        return projects
-            .where((project) =>
-                project.techStack.toLowerCase().contains(query.toLowerCase()))
-            .toList();
-      case 'Faculty Guide':
-        return projects
-            .where((project) => project.facultyGuide
-                .toLowerCase()
-                .contains(query.toLowerCase()))
-            .toList();
-      case 'Team Member':
-        return projects.where((project) {
-          for (String member in project.teamMembers) {
-            if (member.toLowerCase().contains(query.toLowerCase())) {
-              return true;
-            }
-          }
+    query = query.toLowerCase();
+    return projects.where((project) {
+      switch (searchValue) {
+        case 'Title':
+          return project.title.toLowerCase().contains(query);
+        case 'Tech Stack':
+          return project.techStack.toLowerCase().contains(query);
+        case 'Faculty Guide':
+          return project.facultyGuide.toLowerCase().contains(query);
+        case 'Team Member':
+          return project.teamMembers
+              .any((member) => member.toLowerCase().contains(query));
+        default:
           return false;
-        }).toList();
-      default:
-        return projects;
-    }
+      }
+    }).toList();
   }
 
   @override
@@ -171,42 +159,35 @@ class _ProjectMainScreenState extends State<ProjectMainScreen> {
               ),
               SizedBox(height: 10),
               Expanded(
-                child:
-                    // using CupertinoListSection
-                    projects.isEmpty
-                        ? Center(child: CupertinoActivityIndicator())
-                        : CupertinoListSection(
+                child: projects.isEmpty
+                    ? Center(child: CupertinoActivityIndicator())
+                    : filterProjects(searchController.text).isNotEmpty
+                        ? CupertinoListSection(
                             children: filterProjects(searchController.text)
                                 .map((project) => CupertinoListTile(
-                                      leadingSize:
-                                          60, // Increase the size of the leading icon
-                                      title:
-                                          // Title of the project
-                                          Text(
+                                      leadingSize: 60,
+                                      title: Text(
                                         project.title,
                                         style: TextStyle(
                                           color: theme.isDarkTheme
                                               ? Colors.white
                                               : Colors.black,
-                                          fontSize: 18, // Increased font size
+                                          fontSize: 18,
                                           fontWeight: FontWeight.normal,
                                           decoration: TextDecoration.none,
                                         ),
                                       ),
-                                      subtitle:
-                                          // Subtitle of the project
-                                          Text(
+                                      subtitle: Text(
                                         project.techStack,
                                         style: TextStyle(
                                           color: theme.isDarkTheme
                                               ? Colors.white
                                               : Colors.black,
-                                          fontSize: 16, // Increased font size
+                                          fontSize: 16,
                                           fontWeight: FontWeight.normal,
                                           decoration: TextDecoration.none,
                                         ),
                                       ),
-                                      // trailing right arrow like blue icon
                                       trailing:
                                           Icon(CupertinoIcons.right_chevron),
                                       onTap: () {
@@ -219,6 +200,16 @@ class _ProjectMainScreenState extends State<ProjectMainScreen> {
                                       },
                                     ))
                                 .toList(),
+                          )
+                        : Center(
+                            child: Text(
+                              'No projects found',
+                              style: TextStyle(
+                                color: theme.isDarkTheme
+                                    ? Colors.white
+                                    : Colors.black,
+                              ),
+                            ),
                           ),
               ),
               // adding button ( like a floating button ) of add projects taht redirects to  AddProjectScreen

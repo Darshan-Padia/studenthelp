@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:studenthelp/Models/StudentCommunityModels.dart';
 import 'package:studenthelp/components/QuestionDetailPage.dart';
+import 'package:studenthelp/components/QuestionDetailPage_old.dart';
 import 'package:studenthelp/helper/firebase_helper.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:studenthelp/settings/theme_provider.dart';

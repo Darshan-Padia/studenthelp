@@ -1,5 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:studenthelp/Models/StudentCommunityModels.dart';
 import 'package:studenthelp/helper/firebase_helper.dart';
 import 'package:get/get.dart';
@@ -18,25 +18,48 @@ class AddAnswerForm extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          // Text(
+          //   'Your Answer',
+          //   style: Theme.of(context).textTheme.subtitle1,
+          // ),
+          // SizedBox(height: 8.0),
+          // TextField(
+          //   decoration: InputDecoration(
+          //     hintText: 'Write your answer here...',
+          //     border: OutlineInputBorder(),
+          //   ),
+          //   controller: _answerController,
+          //   minLines: 3,
+          //   maxLines: 5,
+          // ),
+          // SizedBox(height: 16.0),
+          // ElevatedButton(
+          //   onPressed: () {
+          //     _submitAnswer(context);
+          //   },
+          //   child: Text('Submit Answer'),
+          // ),
           Text(
             'Your Answer',
-            style: Theme.of(context).textTheme.subtitle1,
+            style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 8.0),
-          TextField(
-            decoration: InputDecoration(
-              hintText: 'Write your answer here...',
-              border: OutlineInputBorder(),
-            ),
+          CupertinoTextField(
             controller: _answerController,
+            placeholder: 'Write your answer here...',
             minLines: 3,
             maxLines: 5,
+            decoration: BoxDecoration(
+              border: Border.all(color: CupertinoColors.systemGrey),
+              borderRadius: BorderRadius.circular(8.0),
+            ),
           ),
           SizedBox(height: 16.0),
-          ElevatedButton(
+          CupertinoButton(
             onPressed: () {
               _submitAnswer(context);
             },
+            color: CupertinoColors.activeBlue,
             child: Text('Submit Answer'),
           ),
         ],
@@ -53,13 +76,10 @@ class AddAnswerForm extends StatelessWidget {
         questionId: question.id,
       );
       _answerController.clear(); // Clear text field after submission
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Answer submitted successfully')),
-      );
+      // get snackbar
+      Get.snackbar('Answer Submitted', 'Your answer has been submitted');
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please provide an answer')),
-      );
+      Get.snackbar('Error', 'Please write your answer');
     }
   }
 }

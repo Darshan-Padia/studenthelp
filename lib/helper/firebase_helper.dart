@@ -227,13 +227,29 @@ class FirebaseHelper {
     }
   }
 
+  // get current mentees for particular mentor
+  Future<List<String>> getCurrentMentees(String mentorId) async {
+    try {
+     QuerySnapshot querySnapshot = await _firestore
+          .collection(mentorCollection)
+          .where('userId', isEqualTo: mentorId)
+          .get();
+      return List<String>.from(querySnapshot.docs.first.get('mentees'));
+    } catch (e) {
+      print('Error getting current mentees: $e');
+      return [];
+    }
+  }
+
   // get mentor requests
   Future<List<String>> getMentorRequests(String mentorId) async {
     print(mentorId);
     try {
-      DocumentSnapshot docSnapshot =
-          await _firestore.collection(mentorCollection).doc(mentorId).get();
-      return List<String>.from(docSnapshot.get('requests'));
+      QuerySnapshot querySnapshot = await _firestore
+          .collection(mentorCollection)
+          .where('userId', isEqualTo: mentorId)
+          .get();
+      return List<String>.from(querySnapshot.docs.first.get('requests'));
     } catch (e) {
       print('Error getting mentor requests: $e');
       return [];
@@ -761,6 +777,8 @@ class FirebaseHelper {
         querySnapshot.docs.forEach((doc) {
           doc.reference.update({'approved': approved});
         });
+        print('User approved status updated successfully for userId: $uid');
+        print('change to $approved');
       });
     } catch (e) {
       print('Error updating user approved status: $e');
@@ -789,9 +807,15 @@ class FirebaseHelper {
       });
 
       // Update the mentee's approved status to true
-      querySnapshot.docs.forEach((doc) {
-        doc.reference.update({'approved': 'true'});
+
+      QuerySnapshot menteeQuerySnapshot = await _firestore
+          .collection(userCollection)
+          .where('userId', isEqualTo: menteeId)
+          .get();
+      menteeQuerySnapshot.docs.forEach((doc) {
+        doc.reference.update({'approved': true});
       });
+      
     } catch (e) {
       print('Error accepting mentorship request: $e');
     }
@@ -800,14 +824,27 @@ class FirebaseHelper {
   // combine reject request function
   Future<void> rejectRequest(String mentorId, String menteeId) async {
     try {
+      print(menteeId);
+      print(mentorId);
       // Remove the mentee from the mentor's requests list
-      await _firestore.collection(mentorCollection).doc(mentorId).update({
-        'requests': FieldValue.arrayRemove([menteeId]),
+      // await _firestore.collection(mentorCollection).doc(mentorId).update({
+      //   'requests': FieldValue.arrayRemove([menteeId]),
+      // });
+       QuerySnapshot querySnapshot = await _firestore
+          .collection(mentorCollection)
+          .where('userId', isEqualTo: mentorId)
+          .get();
+      querySnapshot.docs.forEach((doc) {
+        doc.reference.update({
+          'requests': FieldValue.arrayRemove([menteeId]),
+        });
       });
 
       // Update the mentee's approved status to false
       await updateUserApprovedStatus(menteeId, 'false');
     } catch (e) {
+      print(menteeId);
+      print(mentorId);
       print('Error rejecting mentorship request: $e');
     }
   }

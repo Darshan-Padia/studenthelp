@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:studenthelp/components/AluminiAddPage.dart';
 import 'package:studenthelp/components/BooksHomepage.dart';
 import 'package:studenthelp/components/Iphone.dart';
-import 'package:studenthelp/components/Mentor_Mentee.dart';
+import 'package:studenthelp/components/MentorMentee.dart';
 import 'package:studenthelp/components/ProjectsMainScreen.dart';
 import 'package:studenthelp/components/SearchAlumini.dart';
 import 'package:studenthelp/components/login.dart';

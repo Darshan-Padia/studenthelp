@@ -82,29 +82,43 @@ class _ProfileScreenState extends State<ProfileScreen> {
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(
-        middle: Text(
-          'Profile',
-          style: GoogleFonts.poppins(
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
+@override
+Widget build(BuildContext context) {
+  return CupertinoPageScaffold(
+    navigationBar: CupertinoNavigationBar(
+      middle: Text(
+        'Profile',
+        style: GoogleFonts.poppins(
+          fontSize: 20,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    ),
+    child: SafeArea(
+      child: Stack(
+        children: [
+          Column(
+            children: [
+              _buildCoverImage(context),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const SizedBox(height: 50), // Space for the profile picture
+                      _buildProfileContent(context),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
-        ),
+          _buildProfilePicture(context),
+        ],
       ),
-      child: SafeArea(
-        child: Stack(
-          children: [
-            _buildCoverImage(context),
-            _buildProfilePicture(context),
-            _buildProfileContent(context),
-          ],
-        ),
-      ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildCoverImage(BuildContext context) {
     return Column(
